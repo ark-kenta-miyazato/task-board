@@ -26,3 +26,13 @@ npm run lint     # lint
 npm run build    # 型チェック + 本番ビルド
 npm run preview  # ビルド結果のプレビュー
 ```
+
+`vite.config.ts` で `base: '/task-board/'` を指定しているため、開発サーバーは http://localhost:5173/task-board/ で開きます。
+
+## GitHub Pages への公開
+
+`main` ブランチへの push をきっかけに、GitHub Actions（`.github/workflows/deploy.yml`）が lint・ビルドを行い、GitHub Pages へデプロイします。
+
+初回のみ、GitHub のリポジトリ画面で **Settings → Pages → Build and deployment → Source** を **GitHub Actions** に設定してください。
+
+公開 URL: https://ark-kenta-miyazato.github.io/task-board/
