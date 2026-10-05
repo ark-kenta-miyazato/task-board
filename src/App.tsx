@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import './App.css'
 
@@ -8,9 +8,40 @@ type Task = {
   completed: boolean
 }
 
+const STORAGE_KEY = 'task-board:tasks'
+
+const isTask = (value: unknown): value is Task => {
+  if (typeof value !== 'object' || value === null) return false
+  const v = value as Record<string, unknown>
+  return (
+    typeof v.id === 'string' &&
+    typeof v.title === 'string' &&
+    typeof v.completed === 'boolean'
+  )
+}
+
+const loadTasks = (): Task[] => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (!saved) return []
+    const parsed: unknown = JSON.parse(saved)
+    return Array.isArray(parsed) ? parsed.filter(isTask) : []
+  } catch {
+    return []
+  }
+}
+
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasks, setTasks] = useState<Task[]>(loadTasks)
   const [input, setInput] = useState('')
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
+    } catch {
+      // 保存できない環境（プライベートモード等）ではメモリ上でのみ管理する
+    }
+  }, [tasks])
 
   const addTask = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
